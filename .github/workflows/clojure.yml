@@ -1,0 +1,123 @@
+name: Clojure CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: lein deps
+    - name: Run tests
+      run: lein test
+      
+      env:
+
+         APP_PORT: 8080
+         STATIC_URL: https://github.com/melio-consulting/infra-problem
+         QUOTE_SERVICE_URL: https://github.com/melio-consulting/infra-problem/quotes
+         NEWSFEED_SERVICE_URL: https://github.com/melio-consulting/infra-problem/news-feed
+         
+ - name: Build and push Docker images
+  # You may pin to the exact commit or the version.
+  # uses: docker/build-push-action@e1b7f96249f2e4c8e4ac1519b9608c0d48944a1f
+  uses: docker/build-push-action@v2.4.0
+  with:
+    # List of extra privileged entitlement (eg. network.host,security.insecure)
+    allow: # optional
+    # List of build-time variables
+    build-args: # optional
+    # Builder instance
+    builder: # optional
+    # List of external cache sources for buildx (eg. user/app:cache, type=local,src=path/to/dir)
+    cache-from: # optional
+    # List of cache export destinations for buildx (eg. user/app:cache, type=local,dest=path/to/dir)
+    cache-to: # optional
+    # Build's context is the set of files located in the specified PATH or URL
+    context: # optional
+    # Path to the Dockerfile
+    file: # optional
+    # List of metadata for an image
+    labels: # optional
+    # Load is a shorthand for --output=type=docker
+    load: # optional, default is false
+    # Set the networking mode for the RUN instructions during build
+    network: # optional
+    # Do not use cache when building the image
+    no-cache: # optional, default is false
+    # List of output destinations (format: type=local,dest=path)
+    outputs: # optional
+    # List of target platforms for build
+    platforms: # optional
+    # Always attempt to pull a newer version of the image
+    pull: # optional, default is false
+    # Push is a shorthand for --output=type=registry
+    push: # optional, default is false
+    # List of secrets to expose to the build (eg. key=string, GIT_AUTH_TOKEN=mytoken)
+    secrets: # optional
+    # List of secret files to expose to the build (eg. key=filename, MY_SECRET=./secret.txt)
+    secret-files: # optional
+    # List of SSH agent socket or keys to expose to the build
+    ssh: # optional
+    # List of tags
+    tags: # optional
+    # Sets the target stage to build
+    target: # optional
+    # GitHub Token used to authenticate against a repository for Git context
+    github-token: # optional, default is ${{ github.token }}
+    
+    
+    - name: Azure Container Registry Login
+  uses: Azure/docker-login@v1
+  with:
+    # Container registry username
+    username: # default is 
+    # Container registry password
+    password: # default is 
+    # Container registry server url
+    login-server: # default is https://index.docker.io/v1/
+    
+    - name: Setup Java JDK
+  uses: actions/setup-java@v2.1.0
+  with:
+    # The Java version to set up. Takes a whole or semver Java version. See examples of supported syntax in README file
+    java-version: 
+    # Java distribution. See the list of supported distributions in README file
+    distribution: 
+    # The package type (jdk, jre, jdk+fx, jre+fx)
+    java-package: # optional, default is jdk
+    # The architecture of the package
+    architecture: # optional, default is x64
+    # Path to where the compressed JDK is located
+    jdkFile: # optional
+    # Set this option if you want the action to check for the latest available version that satisfies the version spec
+    check-latest: # optional
+    # ID of the distributionManagement repository in the pom.xml file. Default is `github`
+    server-id: # optional, default is github
+    # Environment variable name for the username for authentication to the Apache Maven repository. Default is $GITHUB_ACTOR
+    server-username: # optional, default is GITHUB_ACTOR
+    # Environment variable name for password or token for authentication to the Apache Maven repository. Default is $GITHUB_TOKEN
+    server-password: # optional, default is GITHUB_TOKEN
+    # Path to where the settings.xml file will be written. Default is ~/.m2.
+    settings-path: # optional
+    # Overwrite the settings.xml file if it exists. Default is "true".
+    overwrite-settings: # optional, default is true
+    # GPG private key to import. Default is empty string.
+    gpg-private-key: # optional
+    # Environment variable name for the GPG private key passphrase. Default is $GPG_PASSPHRASE.
+    gpg-passphrase: # optional
+    
+    - name: Setup Leiningen
+  # You may pin to the exact commit or the version.
+  # uses: oxr463/setup-leiningen@9f4b06d3b8360ad3a20186c85b6ad401e10af9a5
+  uses: oxr463/setup-leiningen@0.0.1
+  with:
+    # Leiningen command to execute
+    exec: 
